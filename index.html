@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hermes Agent 一键部署</title>
+  <style>
+    :root {
+      --bg-deep: #060e1e;
+      --bg-mid: #0a2a5e;
+      --gold: #ffd54f;
+      --gold-dim: rgba(255, 213, 79, 0.12);
+      --white: #ffffff;
+      --muted: rgba(255,255,255,0.5);
+      --radius: 14px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.35);
+      --font: "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-deep);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 40px; }
+    .header h1 {
+      font-size: 32px;
+      background: linear-gradient(135deg,#fff 0%,var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+    .header p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .header .tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 18px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(255,213,79,0.2);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--gold);
+    }
+
+    /* Cards */
+    .card-list { display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      background: rgba(10,42,94,0.3);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,213,79,0.06);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--white);
+    }
+    .card:hover {
+      background: rgba(10,42,94,0.5);
+      border-color: rgba(255,213,79,0.2);
+      transform: translateX(4px);
+    }
+    .card:active { transform: translateX(2px); }
+
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .card-body { flex: 1; min-width: 0; }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .card-action {
+      font-size: 12px;
+      color: var(--gold);
+      white-space: nowrap;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: var(--gold-dim);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,213,79,0.06);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Loading overlay */
+    .overlay {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(6,14,30,0.9);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .overlay.show { display: flex; }
+    .overlay .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid var(--gold-dim);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay p { color: var(--gold); font-size: 16px; }
+    .overlay .sub { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 16px; }
+      .header h1 { font-size: 24px; }
+      .card { padding: 14px 16px; }
+      .card-action { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🤖 Hermes Agent<br>一键部署</h1>
+    <p>点一下，AI自己去学、去配、去完成</p>
+    <div class="tag">👆 点击任意卡片 · 自动执行</div>
+  </div>
+
+  <!-- Cards -->
+  <div class="card-list" id="cardList"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>点一下 · AI自己去完成 · 不懂代码也能用</p>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <p id="overlay-title">⏳ 正在执行中...</p>
+  <p class="sub" id="overlay-sub">AI 正在自主学习并配置，请稍候</p>
+</div>
+
+<script>
+const items = [
+  { icon:'🧭', title:'联网自主操作', desc:'AI自己打开网页、填表格、做文档，像真人一样操作电脑', action:'点击执行' },
+  { icon:'🎭', title:'定义AI分身', desc:'从10+种性格中挑选，打造你的第二个自己', action:'选择性格' },
+  { icon:'⚖️', title:'分清任务大小', desc:'大任务用大模型、小任务用小模型，不浪费钱', action:'自动分配' },
+  { icon:'🧠', title:'自主记忆系统', desc:'AI自己记住聊过什么、做过什么，需要时自动翻历史', action:'一键配置' },
+  { icon:'🌐', title:'联网搜索升级', desc:'不让AI闭卷考试，给它实时搜索能力', action:'自动接通' },
+  { icon:'📜', title:'审计自动化', desc:'每步操作自动记录，随时可查可追溯', action:'自动开启' },
+  { icon:'🛡️', title:'Docker安全箱', desc:'危险命令自动拦截，系统不乱跑', action:'自动部署' },
+  { icon:'👥', title:'三人决策团队', desc:'产品经理+工程师+用户三方辩论，给出最优方案', action:'启动辩论' },
+  { icon:'🔒', title:'三层备份策略', desc:'本地+云端+版本控制，数据永不丢失', action:'自动配置' },
+  { icon:'🌱', title:'技能自动进化', desc:'每次完成的任务自动沉淀为技能，越用越强', action:'启动进化' },
+];
+
+const cardList = document.getElementById('cardList');
+
+items.forEach((item, index) => {
+  const card = document.createElement('a');
+  card.className = 'card';
+  card.href = '#';
+  card.innerHTML = `
+    <div class="card-icon">${item.icon}</div>
+    <div class="card-body">
+      <div class="card-title">${item.title}</div>
+      <div class="card-desc">${item.desc}</div>
+    </div>
+    <div class="card-action">${item.action} →</div>
+  `;
+  card.addEventListener('click', (e) => {
+    e.preventDefault();
+    const overlay = document.getElementById('overlay');
+    document.getElementById('overlay-title').textContent = `⏳ 正在执行：${item.title}`;
+    document.getElementById('overlay-sub').textContent = `AI正在自主学习并配置「${item.desc}」`;
+    overlay.classList.add('show');
+    // 模拟执行过程，5秒后关闭
+    setTimeout(() => {
+      overlay.classList.remove('show');
+    }, 5000);
+  });
+  cardList.appendChild(card);
+});
+</script>
+</body>
+</html>
