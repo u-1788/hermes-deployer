@@ -6,187 +6,183 @@
   <title>Hermes Agent 一键部署</title>
   <style>
     :root {
-      --bg: #060e1e;
-      --bg2: #0a2a5e;
+      --bg-deep: #060e1e;
+      --bg-mid: #0a2a5e;
+      --bg-card: rgba(10, 42, 94, 0.45);
       --gold: #ffd54f;
-      --gold-dim: rgba(255,213,79,0.12);
-      --gold-border: rgba(255,213,79,0.2);
+      --gold-dim: rgba(255, 213, 79, 0.12);
       --white: #ffffff;
-      --muted: rgba(255,255,255,0.5);
-      --radius: 14px;
-      --font: "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+      --muted: rgba(255, 255, 255, 0.55);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --font: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, sans-serif;
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: var(--font);
-      background: var(--bg);
+      background: var(--bg-deep);
       color: var(--white);
-      min-height: 100vh;
-    }
-
-    /* Nav */
-    .nav {
-      position: fixed; top:0; left:0; right:0; z-index:100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 24px;
-      background: rgba(6,14,30,0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--gold-border);
-    }
-    .nav-logo { font-size: 20px; font-weight: 700; color: var(--gold); }
-    .nav-btn {
-      padding: 8px 20px; border-radius: 6px;
-      background: linear-gradient(135deg, var(--gold), #f5a623);
-      color: var(--bg); font-weight: 700; font-size: 14px;
-      border: none; cursor: pointer; text-decoration: none;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     /* Hero */
     .hero {
-      padding: 120px 24px 60px;
-      background: linear-gradient(170deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      padding: 40px 20px;
       position: relative;
       overflow: hidden;
+      background: linear-gradient(135deg, #0a2a5e 0%, #060e1e 50%, #0a1a3e 100%);
     }
-    .hero-badge {
-      display: inline-block;
-      padding: 6px 20px; border-radius: 100px;
-      background: var(--gold-dim);
-      border: 1px solid var(--gold-border);
-      font-size: 13px; color: var(--gold);
-      margin-bottom: 20px;
+    #particle-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 800px; }
+    .kicker {
+      font-size: 14px; color: var(--gold);
+      letter-spacing: 6px; margin-bottom: 20px;
     }
     .hero h1 {
-      font-size: 48px; font-weight: 800;
-      line-height: 1.2; margin-bottom: 16px;
+      font-size: 46px; font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px; line-height: 1.3;
     }
-    .hero h1 .gold { color: var(--gold); }
     .hero .sub {
       font-size: 18px; color: var(--muted);
-      letter-spacing: 2px; margin-bottom: 30px;
+      margin-bottom: 12px; letter-spacing: 2px;
     }
-    .hero-cta {
+    .hero .tagline {
+      display: inline-block;
+      padding: 8px 24px; border-radius: 30px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(255,213,79,0.2);
+      font-size: 13px; color: var(--gold);
+      margin-bottom: 24px;
+    }
+    .hero-line {
+      width: 100px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 24px;
+    }
+    .hero-desc {
+      font-size: 15px; color: var(--muted);
+      line-height: 1.8; margin-bottom: 30px;
+      max-width: 560px; margin-left: auto; margin-right: auto;
+    }
+    .cta-btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 14px 36px; border-radius: 30px;
-      background: var(--gold); color: var(--bg);
-      font-weight: 700; font-size: 16px;
-      border: none; cursor: pointer; text-decoration: none;
+      background: var(--gold); color: var(--bg-deep);
+      font-size: 16px; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
       box-shadow: 0 4px 20px rgba(255,213,79,0.3);
+      transition: var(--transition);
+    }
+    .cta-btn:hover { transform: translateY(-2px); }
+    .scroll-hint {
+      position: absolute; bottom: 24px; left: 50%;
+      transform: translateX(-50%); z-index: 2;
+      color: var(--muted); font-size: 13px; letter-spacing: 2px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
     }
 
-    /* Stats */
-    .stats {
-      display: flex; justify-content: center; gap: 16px;
-      margin-top: 40px; flex-wrap: wrap;
+    /* Section */
+    section { padding: 64px 20px; max-width: 1000px; margin: 0 auto; }
+    .sec-title { text-align: center; margin-bottom: 36px; }
+    .sec-title h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .sec-title p { font-size: 14px; color: var(--muted); }
+    .gold-line {
+      width: 50px; height: 3px; background: var(--gold);
+      margin: 14px auto 0; border-radius: 2px;
     }
-    .stat-card {
-      padding: 12px 20px; border-radius: 10px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      text-align: center; min-width: 80px;
-    }
-    .stat-num { font-size: 24px; font-weight: 900; color: var(--gold); }
-    .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    /* Main */
-    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px 60px; }
-
-    .section-title {
-      text-align: center; margin-bottom: 30px;
-    }
-    .section-title h2 {
-      font-size: 26px; font-weight: 700; margin-bottom: 8px;
-    }
-    .section-title p { font-size: 14px; color: var(--muted); }
-
-    /* Cards - 参考 ai-artisan 风格 */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
+    /* Grid */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 
     .card {
-      display: flex; align-items: center; gap: 14px;
-      padding: 16px 18px;
-      background: rgba(10,42,94,0.3);
-      backdrop-filter: blur(6px);
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
       border: 1px solid rgba(255,213,79,0.06);
       border-radius: var(--radius);
+      padding: 22px 20px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none; color: var(--white);
-      position: relative; overflow: hidden;
     }
     .card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; width: 3px; height: 100%;
+      top: 0; left: 0; width: 4px; height: 100%;
       background: var(--gold);
       opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .card:hover {
-      background: rgba(10,42,94,0.5);
-      border-color: var(--gold-border);
-      transform: translateY(-2px);
+      transition: var(--transition);
     }
     .card:hover::before { opacity: 1; }
-
-    .card-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: var(--gold-dim);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .card-body { flex:1; min-width:0; }
-    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .card-tag {
-      font-size: 11px; color: var(--gold);
-      padding: 2px 10px; border-radius: 12px;
-      background: var(--gold-dim); white-space: nowrap;
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,213,79,0.2);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.3);
     }
 
-    /* Pricing */
-    .pricing-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 16px; max-width: 800px; margin: 0 auto;
+    .card-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--gold-dim); color: var(--gold);
+      font-size: 13px; font-weight: 800; margin-bottom: 10px;
     }
-    .pricing-card {
-      padding: 24px 20px; border-radius: var(--radius);
-      background: rgba(10,42,94,0.3);
-      border: 1px solid rgba(255,213,79,0.06);
+    .card h3 {
+      font-size: 17px; font-weight: 700;
+      margin-bottom: 6px; color: var(--white);
+    }
+    .card .icon { font-size: 20px; margin-right: 6px; }
+    .card .sub-label {
+      font-size: 13px; color: var(--gold);
+      margin-bottom: 6px; font-weight: 500;
+    }
+    .card p {
+      font-size: 13px; color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer-wrap {
+      background: linear-gradient(180deg, transparent, rgba(10,42,94,0.15));
+      padding: 40px 20px;
       text-align: center;
+      border-top: 1px solid rgba(255,213,79,0.06);
     }
-    .pricing-card.featured {
-      border-color: var(--gold);
-      position: relative;
+    .footer-wrap p {
+      font-size: 13px; color: var(--muted);
+      line-height: 1.8;
     }
-    .pricing-card.featured::before {
-      content: '🔥 推荐';
-      position: absolute; top: -10px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--gold); color: var(--bg);
-      padding: 2px 14px; border-radius: 12px;
-      font-size: 11px; font-weight: 700;
+    .footer-wrap .brand {
+      color: var(--gold); font-weight: 600;
     }
-    .pricing-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .pricing-price { font-size: 30px; font-weight: 800; color: var(--gold); }
-    .pricing-unit { font-size: 13px; color: var(--muted); }
-    .pricing-feats { list-style: none; text-align: left; margin: 14px 0; }
-    .pricing-feats li {
-      padding: 4px 0; font-size: 12px; color: var(--muted);
-    }
-    .pricing-feats li::before { content: '✓ '; color: var(--gold); font-weight: 700; }
 
     /* Overlay */
     .overlay {
-      display: none;
-      position: fixed; inset: 0; z-index: 999;
-      background: rgba(6,14,30,0.9);
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(6,14,30,0.92);
       align-items: center; justify-content: center;
       flex-direction: column; gap: 16px;
     }
@@ -200,136 +196,146 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    footer {
-      text-align: center; padding: 20px;
-      border-top: 1px solid var(--gold-border);
-      font-size: 12px; color: var(--muted);
-    }
-
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .hero h1 { font-size: 30px; }
+      .hero .sub { font-size: 15px; }
       .grid { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; max-width: 300px; }
+      section { padding: 40px 16px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="nav">
-  <div class="nav-logo">🤖 Hermes 一键部署</div>
-  <a class="nav-btn" href="#pricing">获取方案</a>
-</nav>
-
 <!-- Hero -->
-<section class="hero">
-  <div class="hero-badge">⚡ 只需点击 · AI自己完成</div>
-  <h1>装上 Hermes Agent 后<br><span class="gold">必做的10件事</span></h1>
-  <p class="sub">点一下 · AI自己去学去配去完成 · 不懂代码也能用</p>
-  <a class="hero-cta" href="#list">🚀 开始配置</a>
-  <div class="stats">
-    <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">核心配置</div></div>
-    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">代码量</div></div>
-    <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">自主进化</div></div>
+<header class="hero">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-content">
+    <div class="kicker">✦ Hermes Agent · 一键部署</div>
+    <h1>装上 Hermes Agent 之后<br>必做10件事</h1>
+    <p class="sub">点一下 · AI自己去学去配去完成</p>
+    <div class="tagline">👆 不懂代码 · 没时间研究 · 照样用上AI数字员工</div>
+    <div class="hero-line"></div>
+    <p class="hero-desc">
+      10项核心配置，点击即执行。<br>
+      AI自动联网学习、自主操作、完成配置。
+    </p>
+    <a href="#list" class="cta-btn">📋 查看10件事</a>
   </div>
-</section>
+  <div class="scroll-hint">↓ 向下滚动</div>
+</header>
 
 <!-- 10 Items -->
-<section id="list" class="container">
-  <div class="section-title">
-    <h2>📋 一键部署清单</h2>
-    <p>点击任一项目 · AI自动学习并配置</p>
+<section id="list">
+  <div class="sec-title">
+    <h2>一键部署清单</h2>
+    <p>点击任意项目 · AI自动学习并完成配置</p>
+    <div class="gold-line"></div>
   </div>
   <div class="grid" id="cardGrid"></div>
 </section>
 
-<!-- Pricing -->
-<section id="pricing" class="container">
-  <div class="section-title">
-    <h2>💎 选择方案</h2>
-    <p>从免费体验到企业定制</p>
-  </div>
-  <div class="pricing-grid">
-    <div class="pricing-card">
-      <div class="pricing-name">🎯 免费版</div>
-      <div class="pricing-price">¥0</div>
-      <div class="pricing-unit">永久</div>
-      <ul class="pricing-feats">
-        <li>基础配置清单</li>
-        <li>AI自主学习</li>
-        <li>社区支持</li>
-      </ul>
-    </div>
-    <div class="pricing-card featured">
-      <div class="pricing-name">🚀 专业版</div>
-      <div class="pricing-price">¥199</div>
-      <div class="pricing-unit">/年</div>
-      <ul class="pricing-feats">
-        <li>全部10项一键部署</li>
-        <li>Docker沙箱预配置</li>
-        <li>Camofox浏览器集成</li>
-        <li>VIP技术支持</li>
-      </ul>
-    </div>
-    <div class="pricing-card">
-      <div class="pricing-name">🏢 企业版</div>
-      <div class="pricing-price">定制</div>
-      <div class="pricing-unit">按需报价</div>
-      <ul class="pricing-feats">
-        <li>私有化部署</li>
-        <li>多Agent定制</li>
-        <li>SLA保障</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
 <!-- Footer -->
-<footer>
-  <p>点一下 · AI自己去完成 · 不懂代码也能用</p>
-</footer>
+<div class="footer-wrap">
+  <p>
+    🤖 Hermes Agent 一键部署 · <span class="brand">文山州互联网协会</span> · 滇边AI · 心学智造<br>
+    「从投资物到投资人，先修心再学器」<br>
+    <span style="font-size:11px;">© 2026 文山州互联网协会 · All rights reserved.</span>
+  </p>
+</div>
 
 <!-- Overlay -->
 <div class="overlay" id="overlay">
   <div class="spinner"></div>
-  <p id="overlay-title" style="color:var(--gold);font-size:16px;">⏳ 正在执行...</p>
-  <p id="overlay-sub" style="color:var(--muted);font-size:13px;">AI正在自主学习配置</p>
+  <p style="color:var(--gold);font-size:16px;" id="ol-title">⏳ 正在执行...</p>
+  <p style="color:var(--muted);font-size:13px;" id="ol-sub">AI正在自主学习并配置</p>
 </div>
 
+<!-- Particle -->
+<script>
+(function() {
+  const cvs = document.getElementById('particle-canvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  let pts = [], id;
+  function resize() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
+  class P {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random()*cvs.width; this.y = Math.random()*cvs.height;
+      this.s = Math.random()*2+0.5;
+      this.sx = (Math.random()-0.5)*0.6; this.sy = (Math.random()-0.5)*0.6;
+      this.o = Math.random()*0.5+0.1;
+    }
+    update() {
+      this.x += this.sx; this.y += this.sy;
+      if(this.x<0||this.x>cvs.width) this.sx*=-1;
+      if(this.y<0||this.y>cvs.height) this.sy*=-1;
+    }
+    draw() {
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2);
+      ctx.fillStyle = `rgba(255,213,79,${this.o})`; ctx.fill();
+    }
+  }
+  function init() {
+    resize();
+    pts = Array.from({length:80},()=>new P());
+  }
+  function animate() {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    pts.forEach(p=>{p.update();p.draw();});
+    for(let i=0;i<pts.length;i++) {
+      for(let j=i+1;j<pts.length;j++) {
+        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist<120) {
+          ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle = `rgba(255,213,79,${0.08*(1-dist/120)})`;
+          ctx.lineWidth=0.5; ctx.stroke();
+        }
+      }
+    }
+    id = requestAnimationFrame(animate);
+  }
+  window.addEventListener('resize',resize);
+  init(); animate();
+})();
+</script>
+
+<!-- Cards -->
 <script>
 const items = [
-  { icon:'🧭', title:'联网自主操作', desc:'AI自己打开网页、填表格、做文档' },
-  { icon:'🎭', title:'定义AI分身', desc:'从10+种性格挑选，打造你的第二个自己' },
-  { icon:'⚖️', title:'分清任务大小', desc:'大任务用大模型，小任务用小模型' },
-  { icon:'🧠', title:'自主记忆系统', desc:'AI自动记住并调用历史对话' },
-  { icon:'🌐', title:'联网搜索升级', desc:'让AI拥有实时信息检索能力' },
-  { icon:'📜', title:'审计自动化', desc:'每步操作自动记录，随时追溯' },
-  { icon:'🛡️', title:'Docker安全箱', desc:'危险命令自动拦截，安全隔离' },
-  { icon:'👥', title:'三人决策团队', desc:'产品+工程+用户三方辩论出方案' },
-  { icon:'🔒', title:'三层备份策略', desc:'数据永不丢失，放心使用' },
-  { icon:'🌱', title:'技能自动进化', desc:'越用越强，每次任务沉淀为技能' },
+  { n:'01', icon:'🧭', title:'联网自主操作', sub:'AI自己看网页、填表格、做文档', desc:'像真人一样操作电脑，自动联网学习并完成配置' },
+  { n:'02', icon:'🎭', title:'定义AI分身', sub:'从10+种性格中挑选', desc:'打造你的第二个自己，选择性格后自动注入智能体' },
+  { n:'03', icon:'⚖️', title:'分清任务大小', sub:'大模型+小模型合理分配', desc:'贵的主模型负责复杂推理，便宜的处理重复脏活' },
+  { n:'04', icon:'🧠', title:'自主记忆系统', sub:'AI自动记住历史对话', desc:'需要时自己翻历史数据，实现从短期到长期记忆' },
+  { n:'05', icon:'🌐', title:'联网搜索升级', sub:'不让AI闭卷考试', desc:'接入后实时获取最新信息，每步搜索透明可追溯' },
+  { n:'06', icon:'📜', title:'审计自动化', sub:'每步操作自动记录', desc:'命令、结果、时间戳自动留存，随时可查可追溯' },
+  { n:'07', icon:'🛡️', title:'Docker安全箱', sub:'危险命令自动拦截', desc:'默认沙箱隔离执行，rm -rf等命令被拒绝执行' },
+  { n:'08', icon:'👥', title:'三人决策团队', sub:'产品+工程+用户三方辩论', desc:'一句话触发三个Agent角色辩论，输出多视角方案' },
+  { n:'09', icon:'🔒', title:'三层备份策略', sub:'数据永不丢失', desc:'本地+云端+版本控制三重保险，一次配置永久安心' },
+  { n:'10', icon:'🌱', title:'技能自动进化', sub:'越用越强，越积越值钱', desc:'每次完成任务自动沉淀为技能，从用工具到造工具' },
 ];
 
 const grid = document.getElementById('cardGrid');
-items.forEach((item, i) => {
+items.forEach(item => {
   const card = document.createElement('div');
   card.className = 'card';
   card.innerHTML = `
-    <div class="card-icon">${item.icon}</div>
-    <div class="card-body">
-      <div class="card-title">${item.title}</div>
-      <div class="card-desc">${item.desc}</div>
-    </div>
-    <div class="card-tag">点击 →</div>
+    <div class="card-num">${item.n}</div>
+    <h3><span class="icon">${item.icon}</span> ${item.title}</h3>
+    <p class="sub-label">${item.sub}</p>
+    <p>${item.desc}</p>
   `;
   card.addEventListener('click', () => {
-    document.getElementById('overlay-title').textContent = `⏳ 正在执行：${item.title}`;
-    document.getElementById('overlay-sub').textContent = `AI正在自主学习并配置「${item.desc}」`;
-    document.getElementById('overlay').classList.add('show');
-    setTimeout(() => document.getElementById('overlay').classList.remove('show'), 4000);
+    const ol = document.getElementById('overlay');
+    document.getElementById('ol-title').textContent = `⏳ 正在执行：${item.title}`;
+    document.getElementById('ol-sub').textContent = `AI正在自主学习并配置「${item.desc}」`;
+    ol.classList.add('show');
+    setTimeout(() => ol.classList.remove('show'), 4000);
   });
   grid.appendChild(card);
 });
 </script>
+
 </body>
 </html>
