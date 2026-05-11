@@ -6,24 +6,18 @@
   <title>Hermes Agent 一键部署</title>
   <style>
     :root {
-      --bg-deep: #060e1e;
-      --bg-mid: #0a2a5e;
+      --bg-deep: #060e1e; --bg-mid: #0a2a5e;
       --bg-card: rgba(10,42,94,0.45);
-      --gold: #ffd54f;
-      --gold-dim: rgba(255,213,79,0.12);
-      --white: #fff;
-      --muted: rgba(255,255,255,0.55);
-      --radius: 16px;
+      --gold: #ffd54f; --gold-dim: rgba(255,213,79,0.12);
+      --white: #fff; --muted: rgba(255,255,255,0.55);
+      --radius: 16px; --radius-sm: 10px;
       --font: "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
       --transition: 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
     }
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{
-      font-family:var(--font);background:var(--bg-deep);color:var(--white);
-      -webkit-font-smoothing:antialiased;
-    }
-
+    body{font-family:var(--font);background:var(--bg-deep);color:var(--white);-webkit-font-smoothing:antialiased}
+    
     /* Hero */
     .hero{
       min-height:100vh;display:flex;flex-direction:column;
@@ -31,10 +25,7 @@
       padding:40px 20px;position:relative;overflow:hidden;
       background:linear-gradient(135deg,#0a2a5e 0%,#060e1e 50%,#0a1a3e 100%);
     }
-    #particle-canvas{
-      position:absolute;top:0;left:0;width:100%;height:100%;
-      pointer-events:none;z-index:1;
-    }
+    #particle-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
     .hero-content{position:relative;z-index:2;max-width:800px}
     .kicker{font-size:14px;color:var(--gold);letter-spacing:6px;margin-bottom:20px}
     .hero h1{
@@ -59,27 +50,25 @@
       box-shadow:0 4px 20px rgba(255,213,79,0.3);transition:var(--transition);
     }
     .cta-btn:hover{transform:translateY(-2px)}
-    .scroll-hint{
-      position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
-      z-index:2;color:var(--muted);font-size:13px;letter-spacing:2px;
-      animation:bounce 2s infinite;
-    }
-    @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+    .scroll-hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:2;color:var(--muted);font-size:13px;animation:bounce 2s infinite}
+    @keyframes bounce{0%,100%{transform:translateX(-50%)translateY(0)}50%{transform:translateX(-50%)translateY(8px)}}
 
-    /* Section common */
+    /* Section */
     section{padding:64px 20px;max-width:1000px;margin:0 auto}
     .sec-title{text-align:center;margin-bottom:36px}
     .sec-title h2{font-size:28px;font-weight:700;margin-bottom:8px}
     .sec-title p{font-size:14px;color:var(--muted)}
     .gold-line{width:50px;height:3px;background:var(--gold);margin:14px auto 0;border-radius:2px}
 
-    /* Grid - 10 items */
+    /* Grid - 10 items as real links */
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
     .card{
+      display:block;
       background:var(--bg-card);backdrop-filter:blur(8px);
       border:1px solid rgba(255,213,79,0.06);
       border-radius:var(--radius);padding:22px 20px;
-      transition:var(--transition);position:relative;overflow:hidden;cursor:pointer;
+      transition:var(--transition);position:relative;overflow:hidden;
+      cursor:pointer;text-decoration:none;color:inherit;
     }
     .card::before{
       content:'';position:absolute;top:0;left:0;width:4px;height:100%;
@@ -96,40 +85,10 @@
     .card .icon{font-size:20px;margin-right:6px}
     .card .sub-label{font-size:13px;color:var(--gold);margin-bottom:6px;font-weight:500}
     .card p{font-size:13px;color:var(--muted);line-height:1.6}
-
-    /* Peace of Mind - 参考 ai-artisan */
-    .peace-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .peace-card{
-      background:var(--bg-card);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,213,79,0.06);
-      border-radius:var(--radius);padding:24px 22px;text-align:center;
-      transition:var(--transition);
+    .card .action-hint{
+      display:inline-block;margin-top:10px;
+      font-size:11px;color:var(--gold);font-weight:600;
     }
-    .peace-card:hover{transform:translateY(-2px);border-color:rgba(255,213,79,0.15)}
-    .peace-icon{font-size:32px;margin-bottom:10px}
-    .peace-card h4{font-size:17px;font-weight:700;color:var(--gold);margin-bottom:8px}
-    .peace-card p{font-size:13px;color:var(--muted);line-height:1.6}
-
-    /* Pricing - 参考 ai-artisan */
-    .pricing-box{
-      background:rgba(10,42,94,0.25);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,213,79,0.08);
-      border-radius:var(--radius);padding:40px 36px;text-align:center;
-      max-width:700px;margin:0 auto;
-    }
-    .pricing-badge{
-      display:inline-block;padding:4px 16px;border-radius:20px;
-      background:var(--gold-dim);border:1px solid rgba(255,213,79,0.2);
-      font-size:12px;color:var(--gold);margin-bottom:16px;
-    }
-    .pricing-box .big-price{font-size:44px;font-weight:900;color:var(--gold)}
-    .pricing-box .unit{font-size:16px;color:var(--muted)}
-    .pricing-box .desc{font-size:14px;color:var(--muted);margin:10px 0 24px;line-height:1.6}
-    .pricing-details{display:flex;justify-content:center;gap:30px;flex-wrap:wrap}
-    .pricing-item{text-align:center}
-    .pricing-item .item-name{font-size:13px;color:var(--muted);margin-bottom:4px}
-    .pricing-item .item-price{font-size:18px;font-weight:700;color:var(--gold)}
-    .pricing-item .free{font-size:14px;color:#4caf50;font-weight:600}
 
     /* Footer */
     .footer-wrap{
@@ -143,110 +102,38 @@
     @media(max-width:768px){
       .hero h1{font-size:30px}
       .grid{grid-template-columns:1fr}
-      .peace-grid{grid-template-columns:1fr}
       section{padding:40px 16px}
     }
   </style>
 </head>
 <body>
 
-<!-- Hero -->
 <header class="hero">
   <canvas id="particle-canvas"></canvas>
   <div class="hero-content">
     <div class="kicker">✦ Hermes Agent · 一键部署</div>
     <h1>装上 Hermes Agent 之后<br>必做10件事</h1>
-    <p class="sub">点一下 · AI自己去学去配去完成</p>
+    <p class="sub">点一下 · 跳转到智能体 · 自主学完配好</p>
     <div class="tagline">👆 不懂代码 · 没时间研究 · 照样用上AI数字员工</div>
     <div class="hero-line"></div>
     <p class="hero-desc">
-      10项核心配置，点击即执行。<br>
-      AI自动联网学习、自主操作、完成配置。
+      10项核心配置，点击即跳转学习。<br>
+      让智能体自己去看、去学、去完成。
     </p>
     <a href="#list" class="cta-btn">📋 查看10件事</a>
   </div>
   <div class="scroll-hint">↓ 向下滚动</div>
 </header>
 
-<!-- 10 Items -->
 <section id="list">
   <div class="sec-title">
     <h2>一键部署清单</h2>
-    <p>点击任意项目 · AI自动学习并完成配置</p>
+    <p>点击任意项目 · 跳转到智能体自主学习</p>
     <div class="gold-line"></div>
   </div>
   <div class="grid" id="cardGrid"></div>
 </section>
 
-<!-- 后顾之忧 - 参考 ai-artisan PEACE OF MIND -->
-<section>
-  <div class="sec-title">
-    <h2>为什么用过的人都放心</h2>
-    <p>不花冤枉钱 · 零风险试用 · 协会兜底 · 效果说话</p>
-    <div class="gold-line"></div>
-  </div>
-  <div class="peace-grid">
-    <div class="peace-card">
-      <div class="peace-icon">💰</div>
-      <h4>不花冤枉钱</h4>
-      <p>一口价透明收费，按需选配。不收年费，不绑死，不满意随时停。</p>
-    </div>
-    <div class="peace-card">
-      <div class="peace-icon">🛡️</div>
-      <h4>零风险试用</h4>
-      <p>先试后买，满意才付款。你没有任何前置成本，没有后顾之忧。</p>
-    </div>
-    <div class="peace-card">
-      <div class="peace-icon">🤝</div>
-      <h4>协会兜底</h4>
-      <p>不是个人在干，是文山州互联网协会在服务。出了问题找得到人。</p>
-    </div>
-    <div class="peace-card">
-      <div class="peace-icon">📈</div>
-      <h4>效果说话</h4>
-      <p>不画大饼不吹牛，干了多少说多少。AI干得怎么样，你亲眼看得见。</p>
-    </div>
-  </div>
-</section>
-
-<!-- 定价 - 参考 ai-artisan -->
-<section>
-  <div class="sec-title">
-    <h2>透明定价 · 一口价无隐藏</h2>
-    <p>投入不到一杯奶茶钱，换来整个AI数字员工</p>
-    <div class="gold-line"></div>
-  </div>
-  <div class="pricing-box">
-    <div class="pricing-badge">🔥 限时体验价</div>
-    <div><span class="big-price">¥0</span><span class="unit"> 起</span></div>
-    <p class="desc">先体验再决定 · 不花一分钱试试AI能帮你干什么</p>
-    <div class="pricing-details">
-      <div class="pricing-item">
-        <div class="item-name">基础配置</div>
-        <div class="free">免费</div>
-      </div>
-      <div class="pricing-item">
-        <div class="item-name">AI自主学习</div>
-        <div class="free">免费</div>
-      </div>
-      <div class="pricing-item">
-        <div class="item-name">Docker沙箱</div>
-        <div class="item-price">¥199</div>
-        <div class="item-name">可选升级</div>
-      </div>
-      <div class="pricing-item">
-        <div class="item-name">年费</div>
-        <div class="free">免</div>
-      </div>
-      <div class="pricing-item">
-        <div class="item-name">持续升级</div>
-        <div class="free">免</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Footer -->
 <div class="footer-wrap">
   <p>
     🤖 Hermes Agent 一键部署 · <span class="brand">文山州互联网协会</span> · 滇边AI · 心学智造<br>
@@ -255,6 +142,7 @@
   </p>
 </div>
 
+<!-- Particle -->
 <script>
 (function(){
   const c=document.getElementById('particle-canvas'),ctx=c.getContext('2d');
@@ -275,51 +163,47 @@
   }
   window.addEventListener('resize',r);init();animate()
 })();
+</script>
 
-// 优化后的10项描述 - 更简洁有力
+<script>
 const items = [
-  {n:'01',icon:'🧭',title:'联网自主操作',sub:'AI自己看网页、填表格、做文档',desc:'像真人一样操作电脑，自动联网学习，完成所有配置工作。你只管点一下。'},
-  {n:'02',icon:'🎭',title:'定义AI分身',sub:'从10+种性格中挑选',desc:'选一个性格，AI就有了自己的行为方式。不用写代码，点一点就拥有你的数字员工。'},
-  {n:'03',icon:'⚖️',title:'分清任务大小',sub:'大模型做主，小模型跑腿',desc:'贵的模型干复杂活，便宜的干重复活。性能不降，成本省一大半。'},
-  {n:'04',icon:'🧠',title:'自主记忆系统',sub:'AI自动记住历史对话',desc:'聊过什么、做过什么，AI自己记住。需要时自动翻历史，不用你重复说。'},
-  {n:'05',icon:'🌐',title:'联网搜索升级',sub:'不让AI闭卷考试',desc:'给AI装上实时搜索能力，查资料、找信息一步到位。每步搜索都可以追溯。'},
-  {n:'06',icon:'📜',title:'审计自动化',sub:'每步操作都有记录',desc:'AI干了什么、什么时候干的、结果如何，全部自动留存。随时可查可追溯。'},
-  {n:'07',icon:'🛡️',title:'Docker安全箱',sub:'危险命令自动拦截',desc:'在沙箱里干活，rm -rf 这类危险命令自动被拦住。系统不乱跑，你安心用。'},
-  {n:'08',icon:'👥',title:'三人决策团队',sub:'产品+工程+用户三方辩论',desc:'一句话触发三个AI角色辩论，从不同角度分析问题，给你最优解。'},
-  {n:'09',icon:'🔒',title:'三层备份策略',sub:'数据永不丢失',desc:'本地存一份、云端存一份、版本控制追历史。配置一次，永远安心。'},
-  {n:'10',icon:'🌱',title:'技能自动进化',sub:'越用越强，越积越值钱',desc:'每次完成的任务自动变成技能。你的AI不是越用越旧，而是越用越聪明。'},
+  {n:'01',icon:'🧭',title:'联网自主操作',sub:'AI自己看网页、填表格、做文档',desc:'像真人一样操作电脑，自动联网学习配置。'},
+  {n:'02',icon:'🎭',title:'定义AI分身',sub:'从10+种性格中挑选',desc:'选一个性格，AI就有了自己的行为方式。'},
+  {n:'03',icon:'⚖️',title:'分清任务大小',sub:'大模型做主，小模型跑腿',desc:'贵的干复杂活，便宜的干重复活，成本省大半。'},
+  {n:'04',icon:'🧠',title:'自主记忆系统',sub:'AI自动记住历史对话',desc:'聊过什么AI自己记住，不用你重复说。'},
+  {n:'05',icon:'🌐',title:'联网搜索升级',sub:'不让AI闭卷考试',desc:'给AI装上实时搜索，查资料一步到位。'},
+  {n:'06',icon:'📜',title:'审计自动化',sub:'每步操作都有记录',desc:'AI干了什么全部自动留存，随时可查。'},
+  {n:'07',icon:'🛡️',title:'Docker安全箱',sub:'危险命令自动拦截',desc:'在沙箱里干活，危险操作自动被拦住。'},
+  {n:'08',icon:'👥',title:'三人决策团队',sub:'产品+工程+用户三方辩论',desc:'三个AI角色辩论，给你最优解。'},
+  {n:'09',icon:'🔒',title:'三层备份策略',sub:'数据永不丢失',desc:'本地+云端+版本控制，三重保险。'},
+  {n:'10',icon:'🌱',title:'技能自动进化',sub:'越用越强，越积越值钱',desc:'完成任务自动变成技能，越用越聪明。'},
 ];
 
 const grid = document.getElementById('cardGrid');
-items.forEach(item => {
-  const card = document.createElement('div');
+items.forEach((item, idx) => {
+  const card = document.createElement('a');
   card.className = 'card';
+  // 用 小优 的指令作为跳转目标 —— 让智能体去学习
+  card.href = `#learn-${item.n}`;
   card.innerHTML = `
     <div class="card-num">${item.n}</div>
     <h3><span class="icon">${item.icon}</span> ${item.title}</h3>
     <p class="sub-label">${item.sub}</p>
     <p>${item.desc}</p>
+    <span class="action-hint">🤖 让智能体去学 →</span>
   `;
-  card.addEventListener('click', () => {
-    const ol = document.getElementById('overlay') || (()=>{
-      const o = document.createElement('div');
-      o.className = 'overlay'; o.id = 'overlay';
-      o.innerHTML = `<div class="spinner"></div><p style="color:var(--gold);font-size:16px" id="ol-title">⏳ 正在执行...</p><p style="color:var(--muted);font-size:13px" id="ol-sub">AI正在自主学习并配置</p>`;
-      document.body.appendChild(o);
-      // Add overlay styles
-      const s = document.createElement('style');
-      s.textContent = '.overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(6,14,30,0.92);align-items:center;justify-content:center;flex-direction:column;gap:16px}.overlay.show{display:flex}.spinner{width:40px;height:40px;border:3px solid rgba(255,213,79,0.12);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}';
-      document.head.appendChild(s);
-      return o;
-    })();
-    ol.querySelector('#ol-title').textContent = `⏳ 正在执行：${item.title}`;
-    ol.querySelector('#ol-sub').textContent = `AI正在自主学习并配置「${item.desc}」`;
-    ol.classList.add('show');
-    setTimeout(() => ol.classList.remove('show'), 4000);
+  card.addEventListener('click', (e) => {
+    e.preventDefault();
+    // 跳转：打开智能体学习指令
+    const cmd = encodeURIComponent(`请帮我完成 Hermes Agent 配置第${item.n}项：「${item.title}」- ${item.sub}。自主学习并完成配置。`);
+    // 这里放一个跳转地址，指向智能体的学习入口
+    // 对于 Hermes Agent 用户，可以是一个本地链接
+    // 对于其他平台，可以是一个指令页面
+    const agentUrl = `https://u-1788.github.io/hermes-deployer/learn.html?task=${item.n}&title=${encodeURIComponent(item.title)}&cmd=${cmd}`;
+    window.location.href = agentUrl;
   });
   grid.appendChild(card);
 });
 </script>
-
 </body>
 </html>
