@@ -130,14 +130,113 @@
     .footer-wrap p{font-size:13px;color:var(--muted);line-height:1.8}
     .footer-wrap .brand{color:var(--gold);font-weight:600}
 
+    /* Modal */
+    .modal{display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center}
+    .modal.show{display:flex}
+    .modal-bg{position:absolute;inset:0;background:rgba(6,14,30,0.85)}
+    .modal-box{
+      position:relative;z-index:1;width:90%;max-width:640px;max-height:85vh;overflow-y:auto;
+      background:linear-gradient(135deg,#0a2a5e,#060e1e);
+      border:1px solid rgba(255,213,79,0.15);border-radius:20px;padding:32px 28px;
+    }
+    .modal-header{text-align:center;margin-bottom:24px}
+    .modal-icon{font-size:40px;margin-bottom:10px}
+    .modal-header h3{font-size:22px;font-weight:800;color:var(--gold);margin-bottom:6px}
+    .modal-header p{font-size:13px;color:var(--muted)}
+    .modal-traits{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .trait{
+      padding:14px;border-radius:12px;text-align:center;cursor:pointer;
+      border:1px solid rgba(255,213,79,0.08);background:rgba(10,42,94,0.3);
+      transition:var(--transition);user-select:none;
+    }
+    .trait:hover{border-color:rgba(255,213,79,0.2)}
+    .trait.selected{
+      border-color:var(--gold);background:var(--gold-dim);box-shadow:0 0 12px rgba(255,213,79,0.15);
+    }
+    .trait-icon{font-size:28px;margin-bottom:4px}
+    .trait-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px}
+    .trait-desc{font-size:11px;color:var(--muted)}
+    .modal-footer{display:flex;gap:10px;flex-direction:column}
+    .modal-btn{
+      width:100%;padding:12px;border-radius:30px;border:none;cursor:pointer;
+      background:var(--gold);color:var(--bg-deep);font-size:15px;font-weight:700;
+      transition:var(--transition);
+    }
+    .modal-btn:disabled{opacity:0.4;cursor:not-allowed}
+    .modal-btn:not(:disabled):hover{transform:translateY(-1px)}
+    .modal-btn-secondary{
+      width:100%;padding:10px;border-radius:30px;border:1px solid rgba(255,213,79,0.2);
+      background:transparent;color:var(--muted);font-size:13px;cursor:pointer;
+    }
+
     @media(max-width:768px){
       .hero h1{font-size:30px}
       .grid{grid-template-columns:1fr}
+      .pricing-grid{grid-template-columns:1fr;max-width:300px}
+      .service-grid,.peace-grid{grid-template-columns:1fr}
       section{padding:40px 16px}
     }
   </style>
 </head>
 <body>
+
+<!-- 性格选择弹窗 -->
+<div class="modal" id="personalityModal">
+  <div class="modal-bg" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-icon">🎭</div>
+      <h3>选择AI性格</h3>
+      <p>选一个或多个性格，决定你的AI数字员工是什么样的人</p>
+    </div>
+    <div class="modal-traits" id="traitGrid">
+      <div class="trait" data-trait="沉稳专家" onclick="toggleTrait(this)">
+        <div class="trait-icon">🧑‍🔬</div>
+        <div class="trait-name">沉稳专家</div>
+        <div class="trait-desc">严谨专业，逻辑清晰</div>
+      </div>
+      <div class="trait" data-trait="热血伙伴" onclick="toggleTrait(this)">
+        <div class="trait-icon">🔥</div>
+        <div class="trait-name">热血伙伴</div>
+        <div class="trait-desc">干劲十足，目标导向</div>
+      </div>
+      <div class="trait" data-trait="温润导师" onclick="toggleTrait(this)">
+        <div class="trait-icon">📖</div>
+        <div class="trait-name">温润导师</div>
+        <div class="trait-desc">耐心讲解，循循善诱</div>
+      </div>
+      <div class="trait" data-trait="幽默风趣" onclick="toggleTrait(this)">
+        <div class="trait-icon">😄</div>
+        <div class="trait-name">幽默风趣</div>
+        <div class="trait-desc">轻松活泼，会讲段子</div>
+      </div>
+      <div class="trait" data-trait="高效执行" onclick="toggleTrait(this)">
+        <div class="trait-icon">⚡</div>
+        <div class="trait-name">高效执行</div>
+        <div class="trait-desc">不废话，直接干</div>
+      </div>
+      <div class="trait" data-trait="暖心倾听" onclick="toggleTrait(this)">
+        <div class="trait-icon">💛</div>
+        <div class="trait-name">暖心倾听</div>
+        <div class="trait-desc">善解人意，共情力强</div>
+      </div>
+      <div class="trait" data-trait="创意脑洞" onclick="toggleTrait(this)">
+        <div class="trait-icon">💡</div>
+        <div class="trait-name">创意脑洞</div>
+        <div class="trait-desc">天马行空，点子多</div>
+      </div>
+      <div class="trait" data-trait="直言不讳" onclick="toggleTrait(this)">
+        <div class="trait-icon">🎯</div>
+        <div class="trait-name">直言不讳</div>
+        <div class="trait-desc">有话直说，不绕弯子</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="confirmTraits()" id="confirmBtn" disabled>✅ 选择后点击下一步部署</button>
+      <button class="modal-btn-secondary" onclick="closeModal()">取消</button>
+    </div>
+  </div>
+</div>
 
 <header class="hero">
   <canvas id="particle-canvas"></canvas>
@@ -247,7 +346,8 @@
 
 <!-- Footer -->
   <p>
-    🤖 Hermes Agent 一键部署 · <span class="brand">文山州互联网协会</span><br>
+    🤖 Hermes Agent 一键部署 · <span class="brand">文山州互联网协会 · 滇边AI · 心学智造</span><br>
+    ws.aiedu.yn.cn · 余川 13577683126<br>
     <span style="font-size:11px;">© 2026 文山州互联网协会 · All rights reserved.</span>
   </p>
 </div>
@@ -304,16 +404,40 @@ items.forEach((item, idx) => {
   `;
   card.addEventListener('click', (e) => {
     e.preventDefault();
-    // 跳转：打开智能体学习指令
+    // 第2项：弹出性格选择弹窗
+    if (item.n === '02') {
+      document.getElementById('personalityModal').classList.add('show');
+      return;
+    }
+    // 其他项：跳转到学习页
     const cmd = encodeURIComponent(`请帮我完成 Hermes Agent 配置第${item.n}项：「${item.title}」- ${item.sub}。自主学习并完成配置。`);
-    // 这里放一个跳转地址，指向智能体的学习入口
-    // 对于 Hermes Agent 用户，可以是一个本地链接
-    // 对于其他平台，可以是一个指令页面
     const agentUrl = `https://u-1788.github.io/hermes-deployer/learn.html?task=${item.n}&title=${encodeURIComponent(item.title)}&cmd=${cmd}`;
     window.location.href = agentUrl;
   });
   grid.appendChild(card);
 });
+
+// 性格选择弹窗
+let selectedTraits = [];
+function toggleTrait(el) {
+  el.classList.toggle('selected');
+  const trait = el.dataset.trait;
+  const idx = selectedTraits.indexOf(trait);
+  if (idx > -1) selectedTraits.splice(idx, 1);
+  else selectedTraits.push(trait);
+  document.getElementById('confirmBtn').disabled = selectedTraits.length === 0;
+}
+function confirmTraits() {
+  if (selectedTraits.length === 0) return;
+  closeModal();
+  const traits = selectedTraits.join('、');
+  const cmd = encodeURIComponent(`请帮我完成 Hermes Agent 配置第02项「定义AI分身」：我的AI需要以下性格特质：${traits}。请根据这些性格生成专属 SOUL.md 人格文件并完成配置。`);
+  const agentUrl = `https://u-1788.github.io/hermes-deployer/learn.html?task=02&title=${encodeURIComponent('定义AI分身 - ' + traits)}&cmd=${cmd}`;
+  window.location.href = agentUrl;
+}
+function closeModal() {
+  document.getElementById('personalityModal').classList.remove('show');
+}
 </script>
 </body>
 </html>
